@@ -2,7 +2,7 @@
     participant browser
     participant server
 
-    browser->>Server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
     activate server
     Note right of browser: the browser sends the user input to the server
     server->>browser: HTML Document (Redirect to /notes - 302 Found)
