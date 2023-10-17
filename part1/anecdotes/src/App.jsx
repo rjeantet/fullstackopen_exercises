@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Button from './components/Button.jsx';
 
 const App = () => {
   const anecdotes = [
@@ -11,8 +12,6 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
     'The only way to go fast, is to go well.',
   ];
-
-  // const points = [1, 4, 6, 3];
 
   const [selected, setSelected] = useState(0);
   const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
@@ -29,15 +28,18 @@ const App = () => {
 
   return (
     <>
+      <h2>Anecdote of the day</h2>
       <div>{anecdotes[selected]}</div>
       <div>
         has {votes[selected]}
-        {votes[selected] === 1 ? ' vote' : ' votes'}
+        {votes[selected] <= 1 ? ' vote' : ' votes'}
       </div>
       <div>
-        <button onClick={handleVoteClick}>vote</button>
-        <button onClick={handleNextClick}>next anecdote</button>
+        <Button handleClick={handleVoteClick} text='vote' />
+        <Button handleClick={handleNextClick} text='next anecdote' />
       </div>
+      <h2>Anecdote with most votes</h2>
+      <div>{anecdotes[votes.indexOf(Math.max(...votes))]}</div>
     </>
   );
 };
