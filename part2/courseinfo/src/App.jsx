@@ -6,18 +6,18 @@ const Header = ({ course }) => {
   );
 };
 
-const Total = ({ course }) => {
-  return (
-    <>
-      <p>
-        Number of exercises{' '}
-        {course.parts[0].exercises +
-          course.parts[1].exercises +
-          course.parts[2].exercises}
-      </p>
-    </>
-  );
-};
+// const Total = ({ course }) => {
+//   return (
+//     <>
+//       <p>
+//         Number of exercises{' '}
+//         {course.parts[0].exercises +
+//           course.parts[1].exercises +
+//           course.parts[2].exercises}
+//       </p>
+//     </>
+//   );
+// };
 
 const Part = ({ part, exercises }) => {
   return (
@@ -44,7 +44,7 @@ const Course = ({ course }) => {
     <>
       <Header course={course} />
       <Content course={course} />
-      <Total course={course} />
+      {/* <Total course={course} /> */}
     </>
   );
 };
