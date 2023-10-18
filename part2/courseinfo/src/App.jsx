@@ -11,7 +11,7 @@ const Total = ({ course }) => {
     <>
       <p>
         <b>
-          Total of{' '}
+          Total of:{' '}
           {course.parts.reduce((total, part) => total + part.exercises, 0)}{' '}
           exercises
         </b>
