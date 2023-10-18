@@ -6,18 +6,19 @@ const Header = ({ course }) => {
   );
 };
 
-// const Total = ({ course }) => {
-//   return (
-//     <>
-//       <p>
-//         Number of exercises{' '}
-//         {course.parts[0].exercises +
-//           course.parts[1].exercises +
-//           course.parts[2].exercises}
-//       </p>
-//     </>
-//   );
-// };
+const Total = ({ course }) => {
+  return (
+    <>
+      <p>
+        <b>
+          Total of{' '}
+          {course.parts.reduce((total, part) => total + part.exercises, 0)}{' '}
+          exercises
+        </b>
+      </p>
+    </>
+  );
+};
 
 const Part = ({ part, exercises }) => {
   return (
@@ -44,7 +45,7 @@ const Course = ({ course }) => {
     <>
       <Header course={course} />
       <Content course={course} />
-      {/* <Total course={course} /> */}
+      <Total course={course} />
     </>
   );
 };
@@ -68,6 +69,11 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3,
+      },
+      {
+        name: 'Redux',
+        exercises: 11,
+        id: 4,
       },
     ],
   };
