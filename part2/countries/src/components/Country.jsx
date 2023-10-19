@@ -1,7 +1,7 @@
 import countryService from '../services/countries';
 import { useState, useEffect } from 'react';
 
-const Country = ({ filteredCountries }) => {
+const Country = ({ selectedCountry }) => {
   const [countryDetails, setCountryDetails] = useState({
     name: { common: '' },
     capital: '',
@@ -11,8 +11,7 @@ const Country = ({ filteredCountries }) => {
   });
 
   useEffect(() => {
-    const name = filteredCountries[0].name.common;
-    console.log(name);
+    const name = selectedCountry.name.common;
     countryService.getCountry(name).then((response) => {
       setCountryDetails(response.data);
       console.log('country details:', response.data);

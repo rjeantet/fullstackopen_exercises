@@ -6,6 +6,7 @@ const App = () => {
   const [search, setSearch] = useState('');
   const [countries, setCountries] = useState([]);
   const [filteredCountries, setFilteredCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   useEffect(() => {
     console.log('fetching countries...');
@@ -20,6 +21,13 @@ const App = () => {
       country.name.common.toLowerCase().includes(search.toLowerCase())
     );
     setFilteredCountries(filteredCountries);
+    filteredCountries.length === 1
+      ? setSelectedCountry(filteredCountries[0])
+      : setSelectedCountry(null);
+  };
+
+  const handleShowCountry = (country) => {
+    setSelectedCountry(country);
   };
 
   return (
@@ -27,17 +35,22 @@ const App = () => {
       <label>Find countries: </label>
       <input value={search} onChange={handleSearch} />
 
-      <ul>
-        {filteredCountries.length > 10 ? (
-          <p>Too many matches, specify another filter</p>
-        ) : filteredCountries.length === 1 ? (
-          <Country filteredCountries={filteredCountries} />
-        ) : (
-          filteredCountries.map((country, index) => (
-            <li key={country.cioc || index}>{country.name.common}</li>
-          ))
-        )}
-      </ul>
+      {selectedCountry || filteredCountries.length === 1 ? (
+        <Country selectedCountry={selectedCountry} />
+      ) : (
+        <ul>
+          {filteredCountries.length > 10 ? (
+            <p>Too many matches, specify another filter</p>
+          ) : (
+            filteredCountries.map((country, index) => (
+              <li key={country.cioc || index}>
+                {country.name.common}
+                <button onClick={() => handleShowCountry(country)}>show</button>
+              </li>
+            ))
+          )}
+        </ul>
+      )}
     </>
   );
 };
