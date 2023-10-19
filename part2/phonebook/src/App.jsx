@@ -29,7 +29,7 @@ const App = () => {
 
     // Check if not already in phonebook
     const personAdded = persons.find(
-      (person) => person.name.toLowerCase() === newName
+      (person) => person.name.toLowerCase() === newName.toLowerCase()
     );
 
     // if already in phonebook, ask if we update number
