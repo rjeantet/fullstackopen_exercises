@@ -11,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
   const [message, setMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   // Get data from server
   useEffect(() => {
@@ -43,15 +44,28 @@ const App = () => {
       // If user says yes, update number
       if (updateNumber) {
         const id = personAdded.id;
-        personService.update(id, personObject).then((response) => {
-          setPersons(
-            persons.map((person) => (person.id !== id ? person : response.data))
-          );
-        });
-        setMessage(`${newName}'s number updated`);
-        setTimeout(() => {
-          setMessage(null);
-        }, 5000);
+        personService
+          .update(id, personObject)
+          .then((response) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== id ? person : response.data
+              )
+            );
+            setMessage(`${newName}'s number updated`);
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
+          })
+          // eslint-disable-next-line no-unused-vars
+          .catch((error) => {
+            setErrorMessage(
+              `Information of ${newName} has already been removed from server`
+            );
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 5000);
+          });
       }
 
       // If user says no, cancel update
@@ -102,7 +116,10 @@ const App = () => {
             setMessage(null);
           }, 5000);
         })
-      : setMessage('Delete cancelled');
+      : setMessage('User deletion cancelled');
+    setTimeout(() => {
+      setMessage(null);
+    }, 2000);
   };
 
   const filteredPersons = persons.filter((person) =>
@@ -112,7 +129,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message} />
+      <Notification message={message} errorMessage={errorMessage} />
       <Filter filter={filter} handleFilter={handleFilter} />
 
       <h2>Add a new</h2>
