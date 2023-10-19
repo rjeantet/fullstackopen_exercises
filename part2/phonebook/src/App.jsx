@@ -52,6 +52,22 @@ const App = () => {
     setFilter(event.target.value);
   };
 
+  const handleDelete = (id) => {
+    const confirmDelete = window.confirm(
+      `Delete ${persons.find((person) => person.id === id).name}?`
+    );
+    confirmDelete
+      ? personService.remove(id).then(() => {
+          setPersons(persons.filter((person) => person.id !== id));
+          alert(
+            `${
+              persons.find((person) => person.id === id).name
+            } deleted from phonebook`
+          );
+        })
+      : alert('Delete cancelled');
+  };
+
   const filteredPersons = persons.filter((person) =>
     person.name.toLowerCase().includes(filter.toLowerCase())
   );
@@ -71,7 +87,7 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons filteredPersons={filteredPersons} />
+      <Persons filteredPersons={filteredPersons} handleDelete={handleDelete} />
     </div>
   );
 };
