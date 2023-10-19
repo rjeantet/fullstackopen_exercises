@@ -1,5 +1,6 @@
 import countryService from '../services/countries';
 import { useState, useEffect } from 'react';
+import weatherService from '../services/weather';
 
 const Country = ({ selectedCountry }) => {
   const [countryDetails, setCountryDetails] = useState({
@@ -8,6 +9,12 @@ const Country = ({ selectedCountry }) => {
     area: 0,
     languages: [],
     flags: { png: '' },
+    latlng: [],
+  });
+  const [weather, setWeather] = useState({
+    main: { temp: 0 },
+    wind: { speed: 0, deg: 0 },
+    weather: [{ icon: '' }],
   });
 
   useEffect(() => {
@@ -16,7 +23,19 @@ const Country = ({ selectedCountry }) => {
       setCountryDetails(response.data);
       console.log('country details:', response.data);
     });
-  }, []);
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    if (countryDetails.latlng.length === 2) {
+      const lat = countryDetails.latlng[0];
+      console.log(countryDetails.latlng[0]);
+      const long = countryDetails.latlng[1];
+      weatherService.getWeather(lat, long).then((response) => {
+        console.log('weather:', response.data);
+        setWeather(response.data);
+      });
+    }
+  }, [countryDetails]);
 
   return (
     <>
@@ -35,6 +54,21 @@ const Country = ({ selectedCountry }) => {
           alt={`${countryDetails.name.common} flag`}
           width='200'
         />
+      </p>
+      <h3>Weather in {countryDetails.capital}</h3>
+      <p>
+        temperature:
+        <span>{weather.main.temp} </span> Celsius
+      </p>
+      <p>
+        <img
+          src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+          alt='weather icon'
+        />
+      </p>
+      <p>
+        wind:
+        <span>{weather.wind.speed} </span> m/s
       </p>
     </>
   );
