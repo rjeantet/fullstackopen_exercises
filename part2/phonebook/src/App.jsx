@@ -12,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
 
+  // Get data from server
   useEffect(() => {
     axios.get(serverURL).then((response) => {
       setPersons(response.data);
@@ -19,18 +20,28 @@ const App = () => {
     });
   }, []);
 
+  // Add new person and store in server
   const addPerson = (event) => {
     event.preventDefault();
     const personObject = {
       name: newName,
       number: newNumber,
     };
+
+    // Check if not already in phonebookm then add a new person
     const personAdded = persons.find((person) => person.name === newName);
     personAdded
       ? alert(`${newName} is already added to phonebook`)
       : setPersons([...persons, personObject]);
     setNewName('');
     setNewNumber('');
+
+    // Post new person to server
+    axios
+      .post('http://localhost:3001/persons', personObject)
+      .then((response) => {
+        console.log(response);
+      });
   };
 
   const handleNameChange = (event) => {
