@@ -3,12 +3,14 @@ import personService from './services/persons';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
+import Notification from './components/Notification';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
+  const [message, setMessage] = useState(null);
 
   // Get data from server
   useEffect(() => {
@@ -46,16 +48,23 @@ const App = () => {
             persons.map((person) => (person.id !== id ? person : response.data))
           );
         });
-        alert(`${newName}'s number updated`);
+        setMessage(`${newName}'s number updated`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
       }
 
       // If user says no, cancel update
       else {
-        alert('Update cancelled');
+        setMessage(`Update cancelled, ${newName}'s number not updated`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
       }
+    }
 
-      // If not in phonebook, add new person and post to server
-    } else {
+    // If not in phonebook, add new person and post to server
+    else {
       setPersons([...persons, personObject]);
       personService.create(personObject).then((response) => {
         console.log('New person added:', response.data);
@@ -84,13 +93,16 @@ const App = () => {
     confirmDelete
       ? personService.remove(id).then(() => {
           setPersons(persons.filter((person) => person.id !== id));
-          alert(
+          setMessage(
             `${
               persons.find((person) => person.id === id).name
             } deleted from phonebook`
           );
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
         })
-      : alert('Delete cancelled');
+      : setMessage('Delete cancelled');
   };
 
   const filteredPersons = persons.filter((person) =>
@@ -100,6 +112,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter filter={filter} handleFilter={handleFilter} />
 
       <h2>Add a new</h2>
