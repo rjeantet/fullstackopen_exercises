@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import personService from './services/persons';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
-
-const serverURL = 'http://localhost:3001/persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -14,9 +12,9 @@ const App = () => {
 
   // Get data from server
   useEffect(() => {
-    axios.get(serverURL).then((response) => {
+    personService.getAll().then((response) => {
       setPersons(response.data);
-      console.log('promise fulfilled:', response.data);
+      console.log('initial phonebook:', response.data);
     });
   }, []);
 
@@ -37,11 +35,9 @@ const App = () => {
     setNewNumber('');
 
     // Post new person to server
-    axios
-      .post('http://localhost:3001/persons', personObject)
-      .then((response) => {
-        console.log(response);
-      });
+    personService.create(personObject).then((response) => {
+      console.log('New person added:', response.data);
+    });
   };
 
   const handleNameChange = (event) => {
