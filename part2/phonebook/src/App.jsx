@@ -26,18 +26,40 @@ const App = () => {
       number: newNumber,
     };
 
-    // Check if not already in phonebookm then add a new person
+    // Check if not already in phonebook
     const personAdded = persons.find((person) => person.name === newName);
-    personAdded
-      ? alert(`${newName} is already added to phonebook`)
-      : setPersons([...persons, personObject]);
+
+    // if already in phonebook, ask if we update number
+    if (personAdded) {
+      const updateNumber = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
+
+      // If user says yes, update number
+      if (updateNumber) {
+        const id = personAdded.id;
+        personService.update(id, personObject).then((response) => {
+          setPersons(
+            persons.map((person) => (person.id !== id ? person : response.data))
+          );
+        });
+        alert(`${newName}'s number updated`);
+      }
+
+      // If user says no, cancel update
+      else {
+        alert('Update cancelled');
+      }
+
+      // If not in phonebook, add new person and post to server
+    } else {
+      setPersons([...persons, personObject]);
+      personService.create(personObject).then((response) => {
+        console.log('New person added:', response.data);
+      });
+    }
     setNewName('');
     setNewNumber('');
-
-    // Post new person to server
-    personService.create(personObject).then((response) => {
-      console.log('New person added:', response.data);
-    });
   };
 
   const handleNameChange = (event) => {
