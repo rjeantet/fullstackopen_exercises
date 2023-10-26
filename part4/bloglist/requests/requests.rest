@@ -11,8 +11,7 @@ PUT http://localhost:3003/api/blogs/{replaceIdHere} HTTP/1.1
 Content-Type: application/json
 
 {
-    "name": "Jo Doe",
-    "number": "00-123457"
+
 }
 
 
@@ -22,7 +21,7 @@ POST http://localhost:3003/api/blogs HTTP/1.1
 Content-Type: application/json
  
 {
-"title": "title here",
+  "title": "title here",
   "author": "author here",
   "url": "url here",
   "likes": 3
