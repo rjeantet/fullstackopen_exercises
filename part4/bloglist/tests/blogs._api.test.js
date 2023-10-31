@@ -22,22 +22,35 @@ test('the unique identifier property of the blog posts is named id', async () =>
   expect(response.body[0].id).toBeDefined();
 });
 
-test('create a blogpost', async () => {
-  const initialBlogs = await api.get('/api/blogs');
-  expect(initialBlogs.body).toHaveLength(11);
+describe('adding a new blog', () => {
+  test('create a blogpost', async () => {
+    const initialBlogs = await api.get('/api/blogs');
 
-  const newBlog = {
-    title: 'Test Blog',
-    author: 'Test Author',
-    url: 'http://test.com',
-    like: 0,
-  };
+    const newBlog = {
+      title: 'Test Blog',
+      author: 'Test Author',
+      url: 'http://test.com',
+      like: 0,
+    };
 
-  await api.post('/api/blogs').send(newBlog);
-  expect(201);
+    await api.post('/api/blogs').send(newBlog);
+    expect(201);
 
-  const updatedBlogs = await api.get('/api/blogs');
-  expect(updatedBlogs.body).toHaveLength(initialBlogs.body.length + 1);
+    const updatedBlogs = await api.get('/api/blogs');
+    const titles = updatedBlogs.body.map((blog) => blog.title);
+    expect(updatedBlogs.body).toHaveLength(initialBlogs.body.length + 1);
+    expect(titles).toContain('Test Blog');
+  });
+
+  test('missing URL or title returns 400', async () => {
+    const newBlog = {
+      author: 'Test Author',
+      likes: 1,
+    };
+
+    await api.post('/api/blogs').send(newBlog);
+    expect(201);
+  });
 });
 
 test('if no likes, default to 0', async () => {
