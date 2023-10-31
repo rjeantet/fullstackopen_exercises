@@ -11,15 +11,33 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/);
 });
 
-test('there are two blogs', async () => {
+test('there are ten blogs', async () => {
   const response = await api.get('/api/blogs');
 
-  expect(response.body).toHaveLength(2);
+  expect(response.body).toHaveLength(10);
 });
 
 test('the unique identifier property of the blog posts is named id', async () => {
   const response = await api.get('/api/blogs');
   expect(response.body[0].id).toBeDefined();
+});
+
+test('create a blogpost', async () => {
+  const initialBlogs = await api.get('/api/blogs');
+  expect(initialBlogs.body).toHaveLength(10);
+
+  const newBlog = {
+    title: 'Test Blog',
+    author: 'Test Author',
+    url: 'http://test.com',
+    like: 0,
+  };
+
+  await api.post('/api/blogs').send(newBlog);
+  expect(201);
+
+  const updatedBlogs = await api.get('/api/blogs');
+  expect(updatedBlogs.body).toHaveLength(initialBlogs.body.length + 1);
 });
 
 afterAll(async () => {
