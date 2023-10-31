@@ -97,6 +97,22 @@ describe('when deleting a blog', () => {
   });
 });
 
+describe('when updating a blog', () => {
+  test('succeeds with status code 200 if id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+
+    const newBlog = {
+      author: 'updated Author',
+      title: 'updated Blog',
+      url: 'http://updatedtest.com',
+      likes: 4,
+    };
+
+    await api.put(`/api/blogs/${blogToUpdate.id}`).send(newBlog).expect(200);
+  });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
