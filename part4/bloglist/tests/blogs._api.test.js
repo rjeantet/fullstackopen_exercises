@@ -11,10 +11,10 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/);
 });
 
-test('there are ten blogs', async () => {
+test('there are eleven blogs', async () => {
   const response = await api.get('/api/blogs');
 
-  expect(response.body).toHaveLength(10);
+  expect(response.body).toHaveLength(11);
 });
 
 test('the unique identifier property of the blog posts is named id', async () => {
@@ -24,7 +24,7 @@ test('the unique identifier property of the blog posts is named id', async () =>
 
 test('create a blogpost', async () => {
   const initialBlogs = await api.get('/api/blogs');
-  expect(initialBlogs.body).toHaveLength(10);
+  expect(initialBlogs.body).toHaveLength(11);
 
   const newBlog = {
     title: 'Test Blog',
