@@ -11,10 +11,10 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/);
 });
 
-test('there are eleven blogs', async () => {
+test('there are 25 blogs', async () => {
   const response = await api.get('/api/blogs');
 
-  expect(response.body).toHaveLength(11);
+  expect(response.body).toHaveLength(25);
 });
 
 test('the unique identifier property of the blog posts is named id', async () => {
@@ -33,37 +33,40 @@ describe('adding a new blog', () => {
       like: 0,
     };
 
-    await api.post('/api/blogs').send(newBlog);
-    expect(201);
+    await api.post('/api/blogs').send(newBlog).expect(201);
 
-    const updatedBlogs = await api.get('/api/blogs');
-    const titles = updatedBlogs.body.map((blog) => blog.title);
-    expect(updatedBlogs.body).toHaveLength(initialBlogs.body.length + 1);
+    const response = await api.get('/api/blogs');
+    const titles = response.body.map((blog) => blog.title);
+    expect(response.body).toHaveLength(initialBlogs.body.length + 1);
     expect(titles).toContain('Test Blog');
   });
 
   test('missing URL or title returns 400', async () => {
+    const initialBlogs = await api.get('/api/blogs');
+
     const newBlog = {
       author: 'Test Author',
       likes: 1,
     };
 
+    await api.post('/api/blogs').send(newBlog).expect(400);
+
+    const response = await api.get('/api/blogs');
+    expect(response.body).toHaveLength(initialBlogs.body.length);
+  });
+
+  test('if no likes, default to 0', async () => {
+    const newBlog = {
+      title: 'Test Blog no likes',
+      author: 'Test Author',
+    };
+
     await api.post('/api/blogs').send(newBlog);
     expect(201);
+
+    const updatedBlogs = await api.get('/api/blogs');
+    expect(updatedBlogs.body[updatedBlogs.body.length - 1].likes).toBe(0);
   });
-});
-
-test('if no likes, default to 0', async () => {
-  const newBlog = {
-    title: 'Test Blog no likes',
-    author: 'Test Author',
-  };
-
-  await api.post('/api/blogs').send(newBlog);
-  expect(201);
-
-  const updatedBlogs = await api.get('/api/blogs');
-  expect(updatedBlogs.body[updatedBlogs.body.length - 1].likes).toBe(0);
 });
 
 afterAll(async () => {
