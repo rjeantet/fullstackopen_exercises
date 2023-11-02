@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Blog from './components/Blog';
+import BlogForm from './components/BlogForm';
 import blogService from './services/blogs';
 import loginService from './services/loginService';
 import Notification from './components/Notification';
@@ -10,6 +11,28 @@ const App = () => {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
   const [user, setUser] = useState(null);
+  const [newTitle, setNewTitle] = useState('');
+  const [newAuthor, setNewAuthor] = useState('');
+  const [newUrl, setNewUrl] = useState('');
+
+  // Add new person and store in server
+  const addBlog = (event) => {
+    event.preventDefault();
+
+    const blogObject = {
+      title: newTitle,
+      author: newAuthor,
+      url: newUrl,
+    };
+
+    setBlogs([...blogs, blogObject]);
+    blogService.create(blogObject).then((response) => {
+      console.log('New blog added:', response.data);
+    });
+    setNewAuthor('');
+    setNewTitle('');
+    setNewUrl('');
+  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -31,6 +54,18 @@ const App = () => {
         setErrorMessage(null);
       }, 5000);
     }
+  };
+
+  const handleTitleChange = (event) => {
+    setNewTitle(event.target.value);
+  };
+
+  const handleAuthorChange = (event) => {
+    setNewAuthor(event.target.value);
+  };
+
+  const handleUrlChange = (event) => {
+    setNewUrl(event.target.value);
   };
 
   useEffect(() => {
@@ -60,10 +95,18 @@ const App = () => {
           logout
         </button>
       </p>
-
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+      <BlogForm
+        addBlog={addBlog}
+        handleTitleChange={handleTitleChange}
+        handleAuthorChange={handleAuthorChange}
+        handleUrlChange={handleUrlChange}
+      />
+      <div>
+        <br></br>
+        {blogs.map((blog) => (
+          <Blog key={blog.id} blog={blog} />
+        ))}
+      </div>
     </>
   ) : (
     <>
