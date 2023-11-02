@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 import blogService from './services/blogs';
 import loginService from './services/loginService';
 import Notification from './components/Notification';
+import Toggable from './components/Toggable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -15,6 +16,8 @@ const App = () => {
   const [newTitle, setNewTitle] = useState('');
   const [newAuthor, setNewAuthor] = useState('');
   const [newUrl, setNewUrl] = useState('');
+
+  const blogFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -42,6 +45,7 @@ const App = () => {
     // If title and url are filled, add new blog and post to server
     else {
       setBlogs([...blogs, blogObject]);
+      blogFormRef.current.toggleVisibility();
       blogService.create(blogObject).then((response) => {});
     }
     setNewAuthor('');
@@ -111,12 +115,14 @@ const App = () => {
           logout
         </button>
       </p>
-      <BlogForm
-        addBlog={addBlog}
-        handleTitleChange={handleTitleChange}
-        handleAuthorChange={handleAuthorChange}
-        handleUrlChange={handleUrlChange}
-      />
+      <Toggable buttonLabel='new blog' ref={blogFormRef}>
+        <BlogForm
+          addBlog={addBlog}
+          handleTitleChange={handleTitleChange}
+          handleAuthorChange={handleAuthorChange}
+          handleUrlChange={handleUrlChange}
+        />
+      </Toggable>
       <div>
         <br></br>
         {blogs.map((blog) => (
