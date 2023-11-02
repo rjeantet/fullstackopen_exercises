@@ -5,9 +5,11 @@ const app = require('../app');
 const api = supertest(app);
 
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
+  await User.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
 });
 
@@ -40,8 +42,11 @@ describe('when adding a new blog', () => {
       likes: 0,
     };
 
+    const token = await helper.getToken();
+
     await api
       .post('/api/blogs')
+      .set({ Authorization: `Bearer ${token}` })
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -59,7 +64,13 @@ describe('when adding a new blog', () => {
       likes: 1,
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    const token = await helper.getToken();
+
+    await api
+      .post('/api/blogs')
+      .set({ Authorization: `Bearer ${token}` })
+      .send(newBlog)
+      .expect(400);
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
@@ -72,7 +83,12 @@ describe('when adding a new blog', () => {
       url: 'http://test.com',
     };
 
-    await api.post('/api/blogs').send(newBlog);
+    const token = await helper.getToken();
+
+    await api
+      .post('/api/blogs')
+      .set({ Authorization: `Bearer ${token}` })
+      .send(newBlog);
     expect(201);
 
     const updatedBlogs = await api.get('/api/blogs');
@@ -82,14 +98,35 @@ describe('when adding a new blog', () => {
 
 describe('when deleting a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
-    const blogsAtStart = await helper.blogsInDb();
-    const blogToDelete = blogsAtStart[0];
+    // creating new blog first
+    const newBlog = {
+      title: 'Test Blog new',
+      author: 'Test Author new',
+      url: 'http://testnew.com',
+      likes: 0,
+    };
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    const token = await helper.getToken();
+
+    await api
+      .post('/api/blogs')
+      .set({ Authorization: `Bearer ${token}` })
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    // deleting the blog
+    const blogs = await helper.blogsInDb();
+    const blogToDelete = blogs.pop();
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set({ Authorization: `Bearer ${token}` })
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
 
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
 
     const titles = blogsAtEnd.map((r) => r.title);
 
