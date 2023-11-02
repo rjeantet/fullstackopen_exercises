@@ -9,13 +9,18 @@ const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [user, setUser] = useState(null);
   const [newTitle, setNewTitle] = useState('');
   const [newAuthor, setNewAuthor] = useState('');
   const [newUrl, setNewUrl] = useState('');
 
-  // Add new person and store in server
+  useEffect(() => {
+    blogService.getAll().then((blogs) => setBlogs(blogs));
+  }, []);
+
+  // Add new blog and store in server
   const addBlog = (event) => {
     event.preventDefault();
 
@@ -25,13 +30,27 @@ const App = () => {
       url: newUrl,
     };
 
-    setBlogs([...blogs, blogObject]);
-    blogService.create(blogObject).then((response) => {
-      console.log('New blog added:', response.data);
-    });
+    // Check if title and url are filled
+    if (!newTitle || !newUrl) {
+      setErrorMessage('Title and url are mandatory');
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+      return;
+    }
+
+    // If title and url are filled, add new blog and post to server
+    else {
+      setBlogs([...blogs, blogObject]);
+      blogService.create(blogObject).then((response) => {});
+    }
     setNewAuthor('');
     setNewTitle('');
     setNewUrl('');
+    setMessage(`a new blog ${newTitle} by ${newAuthor} added`);
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
   };
 
   const handleLogin = async (event) => {
@@ -49,7 +68,7 @@ const App = () => {
       setUsername('');
       setPassword('');
     } catch (exception) {
-      setErrorMessage('Wrong credentials');
+      setErrorMessage('Wrong username or password');
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
@@ -69,10 +88,6 @@ const App = () => {
   };
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
-
-  useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
@@ -84,6 +99,7 @@ const App = () => {
   return user ? (
     <>
       <h2>blogs</h2>
+      <Notification message={message} errorMessage={errorMessage} />
       <p>
         {user.name} logged in{' '}
         <button
@@ -111,7 +127,7 @@ const App = () => {
   ) : (
     <>
       <h1>Log in to the application</h1>
-      <Notification message={errorMessage} />
+      <Notification message={message} errorMessage={errorMessage} />
       <form onSubmit={handleLogin}>
         <div>
           username
