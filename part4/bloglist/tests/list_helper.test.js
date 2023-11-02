@@ -106,3 +106,17 @@ describe('favorite blog', () => {
     expect(result).toEqual(listWithMultipleBlogs[2]);
   });
 });
+
+describe('most blogs', () => {
+  test('of empty list is null', () => {
+    const blogs = [];
+
+    const result = listHelper.mostBlogs(blogs);
+    expect(result).toBe(null);
+  });
+
+  test('of a list gives the author name and count of blogs', () => {
+    const result = listHelper.mostBlogs(listWithMultipleBlogs);
+    expect(result).toEqual({ author: 'Robert C. Martin', blogs: 3 });
+  });
+});
