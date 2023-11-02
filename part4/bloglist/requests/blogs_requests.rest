@@ -9,21 +9,22 @@ GET http://localhost:3003/api/blogs/{replaceIdHere} HTTP/1.1 200 0
 PUT http://localhost:3003/api/blogs/{replaceIdHere} HTTP/1.1 
 Content-Type: application/json
 
-{
-
+{ 
+    "likes": 10
 }
 
 ###
 POST http://localhost:3003/api/blogs HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxhIiwiaWQiOiI2NTQyOTljYWNkOGIyNjFjNjNjZDhhYmIiLCJpYXQiOjE2OTg4NjM3MjEsImV4cCI6MTY5ODg2NzMyMX0.FW-AWJKVenG1MoqEDUGH56yUtmI2U_jZpGhws3_k0lk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvc2UiLCJpZCI6IjY1NDI5ZjgxYjQzN2NkYWQ5ZGUxNWI4ZCIsImlhdCI6MTY5ODkwMjU2NSwiZXhwIjoxNjk4OTA2MTY1fQ.jQap715jv-mKycDjqU5OfVojG88icb2-nZbqZ800Jug
 
 {
-  "title": "Le Monde de Narnia",
+  "title": "Les folles aventures de Jean last",
   "author": "Another Super Author",
   "url": "url.com",
   "likes": 0
 }
 
 ### 
-DELETE http://localhost:3003/api/blogs/6542992c9228b786cd3d5766 HTTP/1.1 200 0 
+DELETE http://localhost:3003/api/blogs/65429e5716d0d6dea1c5a4dc HTTP/1.1 200 0 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvc2UiLCJpZCI6IjY1NDI5ZjgxYjQzN2NkYWQ5ZGUxNWI4ZCIsImlhdCI6MTY5ODkwMjU2NSwiZXhwIjoxNjk4OTA2MTY1fQ.jQap715jv-mKycDjqU5OfVojG88icb2-nZbqZ800Jug
