@@ -13,9 +13,6 @@ const App = () => {
   const [message, setMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [user, setUser] = useState(null);
-  const [newTitle, setNewTitle] = useState('');
-  const [newAuthor, setNewAuthor] = useState('');
-  const [newUrl, setNewUrl] = useState('');
 
   const blogFormRef = useRef();
 
@@ -24,37 +21,26 @@ const App = () => {
   }, []);
 
   // Add new blog and store in server
-  const addBlog = (event) => {
-    event.preventDefault();
-
-    const blogObject = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl,
-    };
-
-    // Check if title and url are filled
-    if (!newTitle || !newUrl) {
-      setErrorMessage('Title and url are mandatory');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-      return;
-    }
-
-    // If title and url are filled, add new blog and post to server
-    else {
-      setBlogs([...blogs, blogObject]);
-      blogFormRef.current.toggleVisibility();
-      blogService.create(blogObject).then((response) => {});
-    }
-    setNewAuthor('');
-    setNewTitle('');
-    setNewUrl('');
-    setMessage(`a new blog ${newTitle} by ${newAuthor} added`);
-    setTimeout(() => {
-      setMessage(null);
-    }, 5000);
+  const addBlog = (blogObject) => {
+    blogService
+      .create(blogObject)
+      .then((returnedBlog) => {
+        setBlogs(blogs.concat(returnedBlog));
+        blogFormRef.current.toggleVisibility();
+        setMessage(
+          `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+        );
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        setErrorMessage('Title and url are mandatory');
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+      });
   };
 
   const handleLogin = async (event) => {
@@ -116,12 +102,7 @@ const App = () => {
         </button>
       </p>
       <Toggable buttonLabel='new blog' ref={blogFormRef}>
-        <BlogForm
-          addBlog={addBlog}
-          handleTitleChange={handleTitleChange}
-          handleAuthorChange={handleAuthorChange}
-          handleUrlChange={handleUrlChange}
-        />
+        <BlogForm createBlog={addBlog} />
       </Toggable>
       <div>
         <br></br>
