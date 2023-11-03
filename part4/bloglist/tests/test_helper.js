@@ -25,6 +25,11 @@ const initialUsers = [
     name: 'Superuser',
     password: 'salainen',
   },
+  {
+    username: 'rose',
+    name: 'Rose Jeantet',
+    password: 'salainen',
+  },
 ];
 
 const blogsInDb = async () => {

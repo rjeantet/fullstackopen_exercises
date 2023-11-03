@@ -17,7 +17,7 @@ const Blog = ({ blog }) => {
 
   return (
     <div style={blogStyle}>
-      {blog.title}
+      {blog.title}, {blog.author}
       <button onClick={handleShowDetails}>{details ? 'hide' : 'show'}</button>
       <div>
         {details && (
@@ -29,7 +29,7 @@ const Blog = ({ blog }) => {
               likes {blog.likes}
               <button>like</button>
             </div>
-            <div>{blog.author}</div>
+            <div>{blog.user ? `${blog.user.name}` : ''}</div>
           </>
         )}
       </div>
