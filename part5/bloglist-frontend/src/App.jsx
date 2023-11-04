@@ -52,6 +52,19 @@ const App = () => {
     });
   };
 
+  const handleDelete = (id) => {
+    const blog = blogs.find((blog) => blog.id === id);
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      blogService.remove(id).then(() => {
+        setBlogs(blogs.filter((blog) => blog.id !== id));
+        setMessage(`Blog ${blog.title} by ${blog.author} deleted`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+      });
+    }
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -121,7 +134,9 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
+              user={user}
               handleLikes={() => handleLikes(blog)}
+              handleDelete={() => handleDelete(blog.id)}
             />
           ))}
       </div>

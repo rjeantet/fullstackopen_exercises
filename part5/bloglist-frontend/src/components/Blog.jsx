@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 
-const Blog = ({ blog, handleLikes }) => {
+const Blog = ({ blog, user, handleLikes, handleDelete }) => {
   const [details, setDetails] = useState(false);
   const [likes, setLikes] = useState();
+  const [deleted, setDeleted] = useState();
 
   const handleShowDetails = () => {
     setDetails(!details);
@@ -10,6 +11,10 @@ const Blog = ({ blog, handleLikes }) => {
 
   useEffect(() => {
     setLikes(blog.likes);
+  }, []);
+
+  useEffect(() => {
+    setDeleted(blog.deleted);
   }, []);
 
   const blogStyle = {
@@ -35,6 +40,13 @@ const Blog = ({ blog, handleLikes }) => {
               <button onClick={handleLikes}>like</button>
             </div>
             <div>{blog.user ? `${blog.user.name}` : ''}</div>
+            <div>
+              {blog.user && user.username === `${blog.user.username}` ? (
+                <button onClick={() => handleDelete(blog.id)}>remove</button>
+              ) : (
+                ''
+              )}
+            </div>
           </>
         )}
       </div>
