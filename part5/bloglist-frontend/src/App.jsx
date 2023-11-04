@@ -44,7 +44,7 @@ const App = () => {
   };
 
   const handleLikes = (blog) => {
-    const changedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id };
+    const changedBlog = { ...blog, likes: blog.likes + 1 };
     blogService.update(blog.id, changedBlog).then((changedBlog) => {
       setBlogs(
         blogs.map((blog) => (blog.id !== changedBlog.id ? blog : changedBlog))
@@ -115,13 +115,15 @@ const App = () => {
       </Toggable>
       <div>
         <br></br>
-        {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            handleLikes={() => handleLikes(blog)}
-          />
-        ))}
+        {blogs
+          // .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              handleLikes={() => handleLikes(blog)}
+            />
+          ))}
       </div>
     </>
   ) : (
