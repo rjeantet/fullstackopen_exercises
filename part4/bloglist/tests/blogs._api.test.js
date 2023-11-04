@@ -136,17 +136,35 @@ describe('when deleting a blog', () => {
 
 describe('when updating a blog', () => {
   test('succeeds with status code 200 if id is valid', async () => {
-    const blogsAtStart = await helper.blogsInDb();
-    const blogToUpdate = blogsAtStart[0];
+    const [blogBefore] = await helper.blogsInDb();
 
-    const newBlog = {
-      author: 'updated Author',
-      title: 'updated Blog',
-      url: 'http://updatedtest.com',
-      likes: 4,
-    };
+    const modifiedBlog = { ...blogBefore, title: 'Goto considered useful' };
 
-    await api.put(`/api/blogs/${blogToUpdate.id}`).send(newBlog).expect(200);
+    await api.put(`/api/blogs/${blogBefore.id}`).send(modifiedBlog).expect(200);
+
+    const blogs = await helper.blogsInDb();
+
+    const titles = blogs.map((r) => r.title);
+
+    expect(titles).toContain(modifiedBlog.title);
+
+    // const blogsAtStart = await helper.blogsInDb();
+    // const blogToUpdate = blogsAtStart[0];
+    // console.log(blogToUpdate);
+
+    // const modifiedBlog = { ...blogToUpdate, title: 'Goto considered useful' };
+
+    // await api
+    //   .put(`/api/blogs/${blogToUpdate.id}`)
+    //   .send(modifiedBlog)
+    //   .expect(200);
+
+    // console.log(modifiedBlog);
+    // const blogs = await helper.blogsInDb();
+    // console.log(blogs);
+    // const titles = blogs.map((r) => r.title);
+
+    // expect(titles).toContain(modifiedBlog.title);
   });
 });
 

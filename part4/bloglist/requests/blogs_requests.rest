@@ -6,12 +6,17 @@ GET http://localhost:3003/api/blogs/ HTTP/1.1 200 0
 GET http://localhost:3003/api/blogs/{replaceIdHere} HTTP/1.1 200 0
 
 ###
-PUT http://localhost:3003/api/blogs/{replaceIdHere} HTTP/1.1 
+PUT http://localhost:3003/api/blogs/6545fcd49bc0adc50f31aa32 HTTP/1.1 
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvc2UiLCJpZCI6IjY1NDUzMTYwNWFlYzA2YzQxODM0OWMxNiIsImlhdCI6MTY5OTA4Mzg4MiwiZXhwIjoxNjk5MDg3NDgyfQ.hzJds5fmTAV7H98im2qlxxTpQN_EWg9p6i-yi3Y_b-g
 
 { 
-    "likes": 10
+  "title": "Go To Statement Considered Harmful",
+  "author": "Edsger W. Dijkstra",
+  "url": "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+  "likes": 130
 }
+
 
 ###
 POST http://localhost:3003/api/blogs HTTP/1.1
