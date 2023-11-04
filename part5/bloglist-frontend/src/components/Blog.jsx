@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLikes }) => {
   const [details, setDetails] = useState(false);
+  const [likes, setLikes] = useState();
 
   const handleShowDetails = () => {
     setDetails(!details);
   };
+
+  useEffect(() => {
+    setLikes(blog.likes);
+  }, []);
 
   const blogStyle = {
     padding: 10,
@@ -27,7 +32,7 @@ const Blog = ({ blog }) => {
             </div>
             <div>
               likes {blog.likes}
-              <button>like</button>
+              <button onClick={handleLikes}>like</button>
             </div>
             <div>{blog.user ? `${blog.user.name}` : ''}</div>
           </>

@@ -43,6 +43,15 @@ const App = () => {
       });
   };
 
+  const handleLikes = (blog) => {
+    const changedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id };
+    blogService.update(blog.id, changedBlog).then((changedBlog) => {
+      setBlogs(
+        blogs.map((blog) => (blog.id !== changedBlog.id ? blog : changedBlog))
+      );
+    });
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -107,7 +116,11 @@ const App = () => {
       <div>
         <br></br>
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
+          <Blog
+            key={blog.id}
+            blog={blog}
+            handleLikes={() => handleLikes(blog)}
+          />
         ))}
       </div>
     </>
