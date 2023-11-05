@@ -26,10 +26,14 @@ const Blog = ({ blog, user, handleLikes, handleDelete }) => {
   };
 
   return (
-    <div style={blogStyle}>
-      {blog.title}, {blog.author}
-      <button onClick={handleShowDetails}>{details ? 'hide' : 'show'}</button>
-      <div>
+    <div style={blogStyle} className='blog'>
+      <div className='blogHeader'>
+        <span>
+          {blog.title}, {blog.author}
+        </span>
+        <button onClick={handleShowDetails}>{details ? 'hide' : 'show'}</button>
+      </div>
+      <div className='blogDetails'>
         {details && (
           <>
             <div>
