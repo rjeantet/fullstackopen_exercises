@@ -15,8 +15,10 @@ describe('Render blog', () => {
   let header;
   let details;
 
+  const mockHandler = jest.fn();
+
   beforeEach(() => {
-    component = render(<Blog blog={blog} />);
+    component = render(<Blog blog={blog} handleLikes={mockHandler} />);
     header = component.container.querySelector('.blogHeader');
     details = component.container.querySelector('.blogDetails');
   });
@@ -39,5 +41,17 @@ describe('Render blog', () => {
 
     expect(details).toHaveTextContent('https://react.com/');
     expect(details).toHaveTextContent('likes 52');
+  });
+
+  test('if like button is clicked twice, event handler is called twice', async () => {
+    const button = component.getByText('show');
+    await userEvent.click(button);
+
+    const likeButton = component.getByText('like');
+    await userEvent.click(likeButton);
+    await userEvent.click(likeButton);
+
+    // console.log(prettyDOM(component.container));
+    expect(mockHandler.mock.calls).toHaveLength(2);
   });
 });
