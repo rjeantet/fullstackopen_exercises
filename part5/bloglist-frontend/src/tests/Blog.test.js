@@ -11,21 +11,33 @@ describe('Render blog', () => {
     likes: 52,
   };
 
-  test('renders title and author', () => {
-    const { container } = render(<Blog blog={blog} />);
+  let component;
+  let header;
+  let details;
 
-    const div = container.querySelector('.blogHeader');
-    expect(div).toHaveTextContent(
+  beforeEach(() => {
+    component = render(<Blog blog={blog} />);
+    header = component.container.querySelector('.blogHeader');
+    details = component.container.querySelector('.blogDetails');
+  });
+
+  test('renders title and author', () => {
+    expect(header).toHaveTextContent(
       'Component testing is done with react-testing-library, Stephen King'
     );
 
-    console.log(prettyDOM(div));
+    console.log(prettyDOM(header));
   });
 
   test('URL and likes in details are hidden per default', () => {
-    const { container } = render(<Blog blog={blog} />);
+    expect(details).toBeEmptyDOMElement();
+  });
 
-    const div = container.querySelector('.blogDetails');
-    expect(div).toBeEmptyDOMElement();
+  test('URL and likes are shown when handleShowDetails button is clicked', async () => {
+    const button = component.getByText('show');
+    await userEvent.click(button);
+
+    expect(details).toHaveTextContent('https://react.com/');
+    expect(details).toHaveTextContent('likes 52');
   });
 });
