@@ -121,5 +121,44 @@ describe('Blog app', function () {
         'a deletable blog2 by cypress2 deleted'
       );
     });
+
+    it('blogs are ordered according to likes (descending)', function () {
+      cy.createBlog({
+        title: 'blog 1',
+        author: 'cypress',
+        url: 'http://cypress.io',
+        likes: 1,
+      });
+      cy.createBlog({
+        title: 'blog 2',
+        url: 'http://cypress.io',
+        likes: 2,
+      });
+      cy.createBlog({
+        title: 'blog 3',
+        url: 'http://cypress.io',
+        likes: 3,
+      });
+
+      //per default, blogs are ordered dy likes (descending)
+      cy.get('.blog').eq(0).should('contain', 'blog 3');
+      cy.get('.blog').eq(1).should('contain', 'blog 2');
+      cy.get('.blog').eq(2).should('contain', 'blog 1');
+
+      // when clicking on a like button, the order is updated
+      cy.get('.blog').eq(2).find('button').click();
+      cy.get('.blog')
+        .eq(2)
+        .find('#like-button')
+        .click()
+        .wait(500)
+        .click()
+        .wait(500)
+        .click();
+
+      cy.get('.blog').eq(0).should('contain', 'blog 1');
+      cy.get('.blog').eq(1).should('contain', 'blog 3');
+      cy.get('.blog').eq(2).should('contain', 'blog 2');
+    });
   });
 });
