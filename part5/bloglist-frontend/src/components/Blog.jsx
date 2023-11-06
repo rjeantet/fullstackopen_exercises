@@ -48,7 +48,12 @@ const Blog = ({ blog, user, handleLikes, handleDelete }) => {
             <div>{blog.user ? `${blog.user.name}` : ''}</div>
             <div>
               {blog.user && user.username === `${blog.user.username}` ? (
-                <button onClick={() => handleDelete(blog.id)}>remove</button>
+                <button
+                  id='remove-button'
+                  onClick={() => handleDelete(blog.id)}
+                >
+                  remove
+                </button>
               ) : (
                 ''
               )}

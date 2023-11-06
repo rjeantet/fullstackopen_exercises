@@ -62,5 +62,19 @@ describe('Blog app', function () {
       cy.get('#like-button').click();
       cy.contains('likes 1');
     });
+
+    it.only('user who created a blog can delete it', function () {
+      cy.createBlog({
+        title: 'a deletable blog',
+        author: 'cypress',
+        url: 'http://cypress.io',
+      });
+      cy.contains('show').click();
+      cy.get('#remove-button').click();
+      cy.get('.feedback').should(
+        'contain',
+        'a deletable blog by cypress deleted'
+      );
+    });
   });
 });
