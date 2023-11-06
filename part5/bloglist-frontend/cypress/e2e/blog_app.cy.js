@@ -63,7 +63,7 @@ describe('Blog app', function () {
       cy.contains('likes 1');
     });
 
-    it.only('user who created a blog can delete it', function () {
+    it('user who created a blog can delete it', function () {
       cy.createBlog({
         title: 'a deletable blog',
         author: 'cypress',
@@ -74,6 +74,51 @@ describe('Blog app', function () {
       cy.get('.feedback').should(
         'contain',
         'a deletable blog by cypress deleted'
+      );
+    });
+
+    it('only user that created the blog can delete it', function () {
+      // create a blog by current user and logout
+      cy.createBlog({
+        title: 'a deletable blog',
+        author: 'cypress1',
+        url: 'http://cypress.io',
+      });
+      cy.contains('logout').click();
+
+      // create user 2, login and create a blog
+      const user2 = {
+        username: 'rose2',
+        name: 'rose jeantet2',
+        password: 'salainen',
+      };
+      cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user2);
+      cy.login({ username: 'rose2', password: 'salainen' });
+      cy.createBlog({
+        title: 'a deletable blog2',
+        author: 'cypress2',
+        url: 'http://cypress.io',
+      });
+
+      // try to delete blog 1 by user 2 (button should not appear)
+      cy.contains('a deletable blog')
+        .parent()
+        .find('button')
+        .click()
+        .get('#remove-button')
+        .should('not.exist');
+
+      // try to delete blog 2 by user 2 (button should appear and message feedback ok)
+      cy.contains('a deletable blog2')
+        .parent()
+        .find('button')
+        .click()
+        .get('#remove-button')
+        .should('exist')
+        .click();
+      cy.get('.feedback').should(
+        'contain',
+        'a deletable blog2 by cypress2 deleted'
       );
     });
   });
