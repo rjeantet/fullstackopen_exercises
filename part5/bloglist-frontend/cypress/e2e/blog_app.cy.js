@@ -51,5 +51,16 @@ describe('Blog app', function () {
       cy.contains('cypress');
       cy.contains('show').click();
     });
+
+    it('a blog can be liked', function () {
+      cy.createBlog({
+        title: 'a likeable blog',
+        author: 'cypress',
+        url: 'http://cypress.io',
+      });
+      cy.contains('show').click();
+      cy.get('#like-button').click();
+      cy.contains('likes 1');
+    });
   });
 });
