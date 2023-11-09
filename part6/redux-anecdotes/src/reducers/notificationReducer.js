@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = 'Initial notification text';
+const initialState = '';
 
 const notificationSlice = createSlice({
   name: 'notification',
@@ -9,8 +9,8 @@ const notificationSlice = createSlice({
     setNotification(state, action) {
       return action.payload;
     },
-    removeNotification(state, action) {
-      return action.payload;
+    removeNotification() {
+      return initialState;
     },
   },
 });
