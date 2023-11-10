@@ -102,9 +102,6 @@ const CreateNew = (props) => {
   const content = useField('text');
   const author = useField('text');
   const info = useField('text');
-  // const [content, setContent] = useState('');
-  // const [author, setAuthor] = useState('');
-  // const [info, setInfo] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -115,6 +112,12 @@ const CreateNew = (props) => {
       votes: 0,
     });
     navigate('/');
+  };
+
+  const handleReset = () => {
+    content.reset();
+    author.reset();
+    info.reset();
   };
 
   return (
@@ -149,6 +152,9 @@ const CreateNew = (props) => {
           />
         </div>
         <button>create</button>
+        <button type='button' onClick={handleReset}>
+          reset
+        </button>
       </form>
     </div>
   );
