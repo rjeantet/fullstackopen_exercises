@@ -1,18 +1,23 @@
 import { useState } from 'react';
 import {
-  BrowserRouter as Router,
+  useMatch,
   Routes,
   Route,
   Link,
   useParams,
+  useNavigate,
 } from 'react-router-dom';
 
-const Menu = ({ addNew, anecdotes }) => {
+const Menu = ({ addNew, anecdotes, notification }) => {
+  const match = useMatch('/anecdotes/:id');
+  const anecdote = match
+    ? anecdotes.find((a) => a.id === Number(match.params.id))
+    : null;
   const padding = {
     paddingRight: 5,
   };
   return (
-    <Router>
+    <>
       <div>
         <Link style={padding} to='/'>
           anecdotes
@@ -24,24 +29,22 @@ const Menu = ({ addNew, anecdotes }) => {
           about
         </Link>
       </div>
+      <Notification notification={notification} />
       <Routes>
         <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route
           path='/anecdotes/:id'
-          element={<Anecdote anecdotes={anecdotes} />}
+          element={<Anecdote anecdote={anecdote} />}
         />
         <Route path='/create' element={<CreateNew addNew={addNew} />} />
         <Route path='/about' element={<About />} />
       </Routes>
-    </Router>
+    </>
   );
 };
 
-const Anecdote = ({ anecdotes }) => {
-  const id = useParams().id;
-  const anecdote = anecdotes.find((a) => a.id === Number(id));
-  console.log(anecdote);
-  console.log(id);
+const Anecdote = ({ anecdote }) => {
+  //const id = useParams().id;
 
   return (
     <>
@@ -103,6 +106,7 @@ const Footer = () => (
 );
 
 const CreateNew = (props) => {
+  const navigate = useNavigate();
   const [content, setContent] = useState('');
   const [author, setAuthor] = useState('');
   const [info, setInfo] = useState('');
@@ -115,6 +119,7 @@ const CreateNew = (props) => {
       info,
       votes: 0,
     });
+    navigate('/');
   };
 
   return (
@@ -151,6 +156,15 @@ const CreateNew = (props) => {
   );
 };
 
+const Notification = ({ notification }) => {
+  const style = {
+    border: 'solid',
+    padding: 10,
+    borderWidth: 1,
+  };
+  return notification ? <div style={style}>{notification}</div> : null;
+};
+
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
     {
@@ -173,9 +187,11 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
+    setNotification(`a new anecdote ${anecdote.content} created!`);
+    setTimeout(() => {
+      setNotification('');
+    }, 5000);
   };
-
-  // const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
 
   const vote = (id) => {
     const anecdote = anecdoteById(id);
@@ -191,7 +207,7 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
-      <Menu anecdotes={anecdotes} addNew={addNew} />
+      <Menu anecdotes={anecdotes} addNew={addNew} notification={notification} />
       <Footer />
     </div>
   );
