@@ -17,7 +17,7 @@ export const createNew = (newAnecdote) => {
 
 export const voteAnecdote = (anecdote) => {
   const updatedAnecdote = { ...anecdote, votes: anecdote.votes + 1 };
-  axios
+  return axios
     .put(`${baseUrl}/${updatedAnecdote.id}`, updatedAnecdote)
     .then((response) => response.data);
 };
