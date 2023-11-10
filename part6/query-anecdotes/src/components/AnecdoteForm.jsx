@@ -10,6 +10,10 @@ const AnecdoteForm = () => {
     mutationFn: createNew,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['anecdotes'] });
+      notification.setNotification('New anecdote created');
+    },
+    onError: (error) => {
+      notification.setNotification(error.response.data.error);
     },
   });
 
@@ -18,7 +22,6 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value;
     event.target.anecdote.value = '';
     newAnecdoteMutation.mutate({ content, votes: 0 });
-    notification.setNotification('New anecdote created');
   };
 
   return (
