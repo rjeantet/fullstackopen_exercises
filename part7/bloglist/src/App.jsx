@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
@@ -9,37 +10,40 @@ import { useContext } from 'react';
 import Toggable from './components/Toggable';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  const notification = useContext(NotificationContext);
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [newTitle, setNewTitle] = useState('');
-  const [newAuthor, setNewAuthor] = useState('');
-  const [newUrl, setNewUrl] = useState('');
-
-  const notification = useContext(NotificationContext);
 
   const blogFormRef = useRef();
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+      blogService.setToken(user.token);
+    }
   }, []);
 
-  // Add new blog and store in server
-  const addBlog = (blogObject) => {
-    blogService
-      .create(blogObject)
-      .then((returnedBlog) => {
-        setBlogs(blogs.concat(returnedBlog));
-        blogFormRef.current.toggleVisibility();
-        notification.setNotification(
-          `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
-        );
-      })
-      .catch((error) => {
-        notification.setError('Title and url are mandatory');
-      });
-  };
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+    retry: 1,
+  });
+  console.log(JSON.parse(JSON.stringify(result)));
+
+  const blogs = result.data;
+  console.log(blogs);
+
+  if (result.isError) {
+    return <div>Blog service not available due to problems in server</div>;
+  }
+
+  if (result.isPending) {
+    return <div>no blogs available</div>;
+  }
 
   const handleLikes = (blog) => {
     const changedBlog = { ...blog, likes: blog.likes + 1 };
@@ -86,27 +90,6 @@ const App = () => {
     }
   };
 
-  const handleTitleChange = (event) => {
-    setNewTitle(event.target.value);
-  };
-
-  const handleAuthorChange = (event) => {
-    setNewAuthor(event.target.value);
-  };
-
-  const handleUrlChange = (event) => {
-    setNewUrl(event.target.value);
-  };
-
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
-
   return user ? (
     <>
       <h2>blogs</h2>
@@ -123,12 +106,11 @@ const App = () => {
         </button>
       </p>
       <Toggable buttonLabel='new blog' ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
+        <BlogForm />
       </Toggable>
       <div>
         <br></br>
         {blogs
-          .sort((a, b) => b.likes - a.likes)
           .map((blog) => (
             <Blog
               key={blog.id}
@@ -137,7 +119,8 @@ const App = () => {
               handleLikes={() => handleLikes(blog)}
               handleDelete={() => handleDelete(blog.id)}
             />
-          ))}
+          ))
+          .sort((a, b) => b.likes - a.likes)}
       </div>
     </>
   ) : (

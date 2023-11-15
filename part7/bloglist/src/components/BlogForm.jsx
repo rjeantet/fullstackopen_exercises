@@ -1,25 +1,36 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import blogService from '../services/blogs';
+import NotificationContext from '../context/NotificationContext';
+import { useContext } from 'react';
 
-const BlogForm = ({ createBlog }) => {
-  const [newTitle, setNewTitle] = useState('');
-  const [newAuthor, setNewAuthor] = useState('');
-  const [newUrl, setNewUrl] = useState('');
+const BlogForm = () => {
+  const queryClient = useQueryClient();
+  const notification = useContext(NotificationContext);
+
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (blog) => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      notification.setNotification(
+        `a new blog ${blog.title} by ${blog.author} added`
+      );
+    },
+    onError: (error) => {
+      notification.setError('Title and url are mandatory');
+    },
+  });
 
   const addBlog = (event) => {
     event.preventDefault();
-    createBlog({
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl,
+    const blog = event.target.value;
+    console.log(blog);
+    event.target.value = '';
+    newBlogMutation.mutate({
+      title: event.target.title.value,
+      author: event.target.author.value,
+      url: event.target.url.value,
+      likes: 0,
     });
-    setNewTitle('');
-    setNewAuthor('');
-    setNewUrl('');
-  };
-
-  BlogForm.propTypes = {
-    createBlog: PropTypes.func.isRequired,
   };
 
   return (
@@ -28,30 +39,15 @@ const BlogForm = ({ createBlog }) => {
       <form onSubmit={addBlog}>
         <div>
           title:
-          <input
-            value={newTitle}
-            id='title'
-            placeholder='title'
-            onChange={(event) => setNewTitle(event.target.value)}
-          />
+          <input id='title' name='title' placeholder='title' />
         </div>
         <div>
           author:
-          <input
-            value={newAuthor}
-            id='author'
-            placeholder='author'
-            onChange={(event) => setNewAuthor(event.target.value)}
-          />
+          <input id='author' name='author' placeholder='author' />
         </div>
         <div>
           url:
-          <input
-            value={newUrl}
-            id='url'
-            placeholder='url'
-            onChange={(event) => setNewUrl(event.target.value)}
-          />
+          <input id='url' name='url' placeholder='url' />
         </div>
         <div>
           <button id='newblog-button' type='submit'>
