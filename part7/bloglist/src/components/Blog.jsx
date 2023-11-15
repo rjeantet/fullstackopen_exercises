@@ -1,21 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const Blog = ({ blog, user, handleLikes, handleDelete }) => {
   const [details, setDetails] = useState(false);
-  const [likes, setLikes] = useState();
-  const [deleted, setDeleted] = useState();
 
   const handleShowDetails = () => {
     setDetails(!details);
   };
-
-  useEffect(() => {
-    setLikes(blog.likes);
-  }, []);
-
-  useEffect(() => {
-    setDeleted(blog.deleted);
-  }, []);
 
   const blogStyle = {
     padding: 10,

@@ -23,7 +23,6 @@ const BlogForm = () => {
   const addBlog = (event) => {
     event.preventDefault();
     const blog = event.target.value;
-    console.log(blog);
     event.target.value = '';
     newBlogMutation.mutate({
       title: event.target.title.value,
