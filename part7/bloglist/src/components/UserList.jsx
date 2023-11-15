@@ -1,10 +1,11 @@
 import { useEffect, useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import Header from './Header';
 import LoginForm from './LoginForm';
 import userService from '../services/userService';
 import AuthContext from '../context/AuthContext';
 
-const Users = () => {
+const UserList = () => {
   const [users, setUsers] = useState([]);
   const { user } = useContext(AuthContext);
 
@@ -27,7 +28,9 @@ const Users = () => {
           <tbody>
             {users.map((user) => (
               <tr key={user.id}>
-                <td>{user.name}</td>
+                <td>
+                  <Link to={`/users/${user.id}`}>{user.name}</Link>
+                </td>
                 <td>{user.blogs.length}</td>
               </tr>
             ))}
@@ -40,4 +43,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default UserList;

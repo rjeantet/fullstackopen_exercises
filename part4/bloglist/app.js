@@ -32,6 +32,7 @@ app.use(middleware.tokenExtractor);
 
 app.use('/api/login', loginRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/users/:id', usersRouter);
 app.use('/api/blogs', blogsRouter);
 
 if (process.env.NODE_ENV === 'test') {
