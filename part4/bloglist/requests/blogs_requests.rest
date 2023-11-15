@@ -21,13 +21,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvc
 ###
 POST http://localhost:3003/api/blogs HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvc2UiLCJpZCI6IjY1NDI5ZjgxYjQzN2NkYWQ5ZGUxNWI4ZCIsImlhdCI6MTY5ODkwMjU2NSwiZXhwIjoxNjk4OTA2MTY1fQ.jQap715jv-mKycDjqU5OfVojG88icb2-nZbqZ800Jug
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvc2UiLCJpZCI6IjY1NDdkMTAzYjE2M2I1NDBkMzE5NWFlMiIsImlhdCI6MTcwMDA3OTg5MywiZXhwIjoxNzAwMDgzNDkzfQ.CYpjNvO527SqPqNUS18a9u50k2yOutapNHc4rbJ4VeI
 
 {
   "title": "Les folles aventures de Jean last",
   "author": "Another Super Author",
   "url": "url.com",
   "likes": 0
+}
+
+###
+
+POST http://localhost:3003/api/blogs/65552d3fa08b707226880a0c/comments HTTP/1.1 200 0
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvc2UiLCJpZCI6IjY1NDdkMTAzYjE2M2I1NDBkMzE5NWFlMiIsImlhdCI6MTcwMDA3OTg5MywiZXhwIjoxNzAwMDgzNDkzfQ.CYpjNvO527SqPqNUS18a9u50k2yOutapNHc4rbJ4VeI
+
+{
+  "comment": "This is a comment frefferfe"
 }
 
 ### 
