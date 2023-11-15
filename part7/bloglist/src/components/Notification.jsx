@@ -1,8 +1,11 @@
-const Notification = ({ message, errorMessage }) => {
-  return message ? (
-    <div className='message feedback'>{message}</div>
-  ) : errorMessage ? (
-    <div className='message error'>{errorMessage}</div>
+import { useContext } from 'react';
+import NotificationContext from '../context/NotificationContext';
+
+const Notification = () => {
+  const { notification } = useContext(NotificationContext);
+
+  return notification ? (
+    <div className={`message ${notification.style}`}>{notification.data}</div>
   ) : null;
 };
 

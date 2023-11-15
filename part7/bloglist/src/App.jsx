@@ -4,18 +4,20 @@ import BlogForm from './components/BlogForm';
 import blogService from './services/blogs';
 import loginService from './services/loginService';
 import Notification from './components/Notification';
+import NotificationContext from './context/NotificationContext';
+import { useContext } from 'react';
 import Toggable from './components/Toggable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
   const [user, setUser] = useState(null);
   const [newTitle, setNewTitle] = useState('');
   const [newAuthor, setNewAuthor] = useState('');
   const [newUrl, setNewUrl] = useState('');
+
+  const notification = useContext(NotificationContext);
 
   const blogFormRef = useRef();
 
@@ -30,19 +32,12 @@ const App = () => {
       .then((returnedBlog) => {
         setBlogs(blogs.concat(returnedBlog));
         blogFormRef.current.toggleVisibility();
-        setMessage(
+        notification.setNotification(
           `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
         );
-        setTimeout(() => {
-          setMessage(null);
-        }, 5000);
       })
       .catch((error) => {
-        console.log(error.response.data);
-        setErrorMessage('Title and url are mandatory');
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
+        notification.setError('Title and url are mandatory');
       });
   };
 
@@ -58,13 +53,17 @@ const App = () => {
   const handleDelete = (id) => {
     const blog = blogs.find((blog) => blog.id === id);
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      blogService.remove(id).then(() => {
-        setBlogs(blogs.filter((blog) => blog.id !== id));
-        setMessage(`Blog ${blog.title} by ${blog.author} deleted`);
-        setTimeout(() => {
-          setMessage(null);
-        }, 5000);
-      });
+      blogService
+        .remove(id)
+        .then(() => {
+          setBlogs(blogs.filter((blog) => blog.id !== id));
+          notification.setNotification(
+            `Blog ${blog.title} by ${blog.author} deleted`
+          );
+        })
+        .catch((error) => {
+          notification.setError('Unauthorized to delete this blog');
+        });
     }
   };
 
@@ -83,10 +82,7 @@ const App = () => {
       setUsername('');
       setPassword('');
     } catch (exception) {
-      setErrorMessage('Wrong username or password');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      notification.setError('Wrong username or password');
     }
   };
 
@@ -114,7 +110,7 @@ const App = () => {
   return user ? (
     <>
       <h2>blogs</h2>
-      <Notification message={message} errorMessage={errorMessage} />
+      <Notification />
       <p>
         {user.name} logged in{' '}
         <button
@@ -147,7 +143,7 @@ const App = () => {
   ) : (
     <>
       <h1>Log in to the application</h1>
-      <Notification message={message} errorMessage={errorMessage} />
+      <Notification />
       <form onSubmit={handleLogin}>
         <div>
           username
