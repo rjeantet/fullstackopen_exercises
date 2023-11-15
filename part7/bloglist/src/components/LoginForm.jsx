@@ -1,14 +1,16 @@
-import React from 'react';
-import { useState } from 'react';
-import loginService from '../services/loginService';
+import { useState, useContext } from 'react';
+import AuthContext from '../context/AuthContext';
+import NotificationContext from '../context/NotificationContext';
 import Notification from './Notification';
+import loginService from '../services/loginService';
+import blogService from '../services/blogs';
 
-//NOT USED at the moment, refactor login in Apps here
 const Login = () => {
+  const notification = useContext(NotificationContext);
+  const { setUser } = useContext(AuthContext);
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [user, setUser] = useState(null);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -18,22 +20,19 @@ const Login = () => {
         username,
         password,
       });
-      console.log(user);
       setUser(user);
-      setUsername('');
-      setPassword('');
+      console.log(user);
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
+      blogService.setToken(user.token);
     } catch (exception) {
-      setErrorMessage('Wrong credentials');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      notification.setError('Wrong username or password');
     }
   };
 
   return (
     <>
-      <h1>Login</h1>
-      <Notification message={errorMessage} />
+      <h1>Log in to the application</h1>
+      <Notification />
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -48,8 +47,8 @@ const Login = () => {
         <div>
           password
           <input
-            type='password'
             id='password'
+            type='password'
             value={password}
             name='Password'
             onChange={({ target }) => setPassword(target.value)}

@@ -6,16 +6,15 @@ import blogService from './services/blogs';
 import loginService from './services/loginService';
 import Notification from './components/Notification';
 import NotificationContext from './context/NotificationContext';
+import LoginForm from './components/LoginForm';
+import AuthContext from './context/AuthContext';
 import { useContext } from 'react';
 import Toggable from './components/Toggable';
 
 const App = () => {
   const queryClient = useQueryClient();
   const notification = useContext(NotificationContext);
-
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
+  const { user, setUser, clearUser } = useContext(AuthContext);
 
   const blogFormRef = useRef();
 
@@ -23,8 +22,9 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
       blogService.setToken(user.token);
+      console.log(user);
+      setUser(user);
     }
   }, []);
 
@@ -63,25 +63,6 @@ const App = () => {
     }
   };
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
-      console.log(user);
-      blogService.setToken(user.token);
-      setUser(user);
-      setUsername('');
-      setPassword('');
-    } catch (exception) {
-      notification.setError('Wrong username or password');
-    }
-  };
-
   const result = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
@@ -105,7 +86,7 @@ const App = () => {
         <button
           onClick={() => {
             window.localStorage.removeItem('loggedBlogappUser');
-            setUser(null);
+            clearUser(user);
           }}
         >
           logout
@@ -130,35 +111,7 @@ const App = () => {
       </div>
     </>
   ) : (
-    <>
-      <h1>Log in to the application</h1>
-      <Notification />
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            id='username'
-            type='text'
-            value={username}
-            name='Username'
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            id='password'
-            type='password'
-            value={password}
-            name='Password'
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type='submit' id='login-button'>
-          login
-        </button>
-      </form>
-    </>
+    <LoginForm />
   );
 };
 
