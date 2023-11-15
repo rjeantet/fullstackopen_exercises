@@ -1,4 +1,6 @@
 import { createContext, useReducer } from 'react';
+import blogService from '../services/blogs';
+import { useEffect } from 'react';
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -12,9 +14,20 @@ const authReducer = (state, action) => {
 };
 
 const AuthContext = createContext();
+const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
 
 export const AuthContextProvider = (props) => {
   const [user, dispatch] = useReducer(authReducer, null);
+
+  useEffect(() => {
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      blogService.setToken(user.token);
+      console.log(user);
+      setUser(user);
+    }
+  }, []);
+
   const setUser = (user) => {
     dispatch({
       type: 'SET_USER',
