@@ -15,6 +15,7 @@ const App = () => {
   return user ? (
     <>
       <Header />
+      <h1>Blog App</h1>
       <Notification />
       <BlogForm />
       <BlogList />
