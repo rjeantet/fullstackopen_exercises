@@ -9,8 +9,6 @@ import BlogList from './components/BlogList';
 import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
 
-import blogService from './services/blogs';
-
 const App = () => {
   const { user } = useContext(AuthContext);
 
