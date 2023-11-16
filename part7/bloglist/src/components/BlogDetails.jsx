@@ -1,28 +1,21 @@
-import { useEffect, useState, useContext } from 'react';
+import { useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import Header from './Header';
 import Notification from './Notification';
+import Comments from './Comments';
 import blogService from '../services/blogs';
 import AuthContext from '../context/AuthContext';
 import NotificationContext from '../context/NotificationContext';
 
 const Blog = () => {
-  const [blog, setBlog] = useState({});
   const id = useParams().id;
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const queryClient = useQueryClient();
   const notification = useContext(NotificationContext);
-
-  useEffect(() => {
-    blogService.getById(id).then((response) => {
-      setBlog(response);
-      console.log(response);
-    });
-  }, [id]);
 
   const likeBlogMutation = useMutation({
     mutationFn: (blog) =>
@@ -62,6 +55,20 @@ const Blog = () => {
     }
   };
 
+  const result = useQuery({
+    queryKey: ['blogs', id],
+    queryFn: () => blogService.getById(id),
+  });
+
+  const blog = result.data;
+
+  if (result.isError) {
+    return <div>Blog service not available due to problems in server</div>;
+  }
+  if (result.isPending) {
+    return <div>Blog not available</div>;
+  }
+
   return (
     <>
       <Header />
@@ -94,18 +101,7 @@ const Blog = () => {
           </div>
         </div>
       </div>
-      <div>
-        <h3>Comments</h3>
-        <ul>
-          {blog.comments && blog.comments.length > 0 ? (
-            blog.comments.map((comment) => (
-              <li key={comment.id}>{comment.comment}</li>
-            ))
-          ) : (
-            <p>No comments yet</p>
-          )}
-        </ul>
-      </div>
+      <Comments blog={blog} />
     </>
   );
 };
