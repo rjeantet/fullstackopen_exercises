@@ -3,6 +3,7 @@ import blogService from '../services/blogs';
 import NotificationContext from '../context/NotificationContext';
 import { useContext, useRef } from 'react';
 import Toggable from './Toggable';
+import { Box, Typography, TextField, Button } from '@mui/material';
 
 const BlogForm = () => {
   const queryClient = useQueryClient();
@@ -37,28 +38,51 @@ const BlogForm = () => {
 
   return (
     <>
-      <Toggable buttonLabel='new blog' ref={blogFormRef}>
-        <h2>Create new blog</h2>
-        <form onSubmit={addBlog}>
-          <div>
-            title:
-            <input id='title' name='title' placeholder='title' />
-          </div>
-          <div>
-            author:
-            <input id='author' name='author' placeholder='author' />
-          </div>
-          <div>
-            url:
-            <input id='url' name='url' placeholder='url' />
-          </div>
-          <div>
-            <button id='newblog-button' type='submit'>
-              create
-            </button>
-          </div>
-        </form>
-      </Toggable>
+      <Box align='center' sx={{ mt: 4 }}>
+        <Toggable buttonLabel='new blog' ref={blogFormRef}>
+          <Typography component='h2' variant='h5'>
+            Create new blog
+          </Typography>
+          <Box width='300px' sx={{ mt: 1 }}>
+            <form onSubmit={addBlog}>
+              <TextField
+                label='title'
+                margin='normal'
+                size='small'
+                id='title'
+                name='title'
+                placeholder='title'
+              />
+              <TextField
+                label='author'
+                margin='normal'
+                size='small'
+                id='author'
+                name='author'
+                placeholder='author'
+              />
+              <TextField
+                label='url'
+                margin='normal'
+                size='small'
+                id='url'
+                name='url'
+                placeholder='url'
+              />
+              <div>
+                <Button
+                  id='newblog-button'
+                  variant='contained'
+                  size='small'
+                  type='submit'
+                >
+                  create
+                </Button>
+              </div>
+            </form>
+          </Box>
+        </Toggable>
+      </Box>
     </>
   );
 };

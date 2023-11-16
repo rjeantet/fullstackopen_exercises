@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
 import { useContext } from 'react';
 
 import AuthContext from './context/AuthContext';
@@ -15,7 +14,6 @@ const App = () => {
   return user ? (
     <>
       <Header />
-      <h1>Blog App</h1>
       <Notification />
       <BlogForm />
       <BlogList />

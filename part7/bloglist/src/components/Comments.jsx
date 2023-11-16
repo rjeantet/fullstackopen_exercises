@@ -1,4 +1,5 @@
 import CommentForm from './CommentForm';
+import { Typography, Box } from '@mui/material';
 
 const Comments = ({ blog }) => {
   const addComment = (comment) => {
@@ -6,8 +7,10 @@ const Comments = ({ blog }) => {
   };
 
   return (
-    <div>
-      <h3>Comments</h3>
+    <Box sx={{ mt: 4 }}>
+      <Typography variant='h6' gutterBottom>
+        Comments
+      </Typography>
       <CommentForm blog={blog} onAddComment={addComment} />
       <ul>
         {blog.comments && blog.comments.length > 0 ? (
@@ -18,7 +21,7 @@ const Comments = ({ blog }) => {
           <p>No comments yet</p>
         )}
       </ul>
-    </div>
+    </Box>
   );
 };
 

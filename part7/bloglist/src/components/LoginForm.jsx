@@ -1,4 +1,6 @@
 import { useState, useContext } from 'react';
+import { TextField, Button, Container, Box, Typography } from '@mui/material';
+
 import AuthContext from '../context/AuthContext';
 import NotificationContext from '../context/NotificationContext';
 import Notification from './Notification';
@@ -31,33 +33,61 @@ const Login = () => {
 
   return (
     <>
-      <h1>Log in to the application</h1>
-      <Notification />
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            id='username'
-            type='text'
-            value={username}
-            name='Username'
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            id='password'
-            type='password'
-            value={password}
-            name='Password'
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type='submit' id='login-button'>
-          login
-        </button>
-      </form>
+      <Container component='main' maxWidth='xs'>
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Typography component='h1' variant='h5'>
+            Log in to the application
+          </Typography>
+          <Notification />
+          <Box
+            component='form'
+            onSubmit={handleLogin}
+            noValidate
+            sx={{ mt: 1 }}
+          >
+            <TextField
+              margin='normal'
+              fullWidth
+              size='small'
+              id='username'
+              label='username'
+              type='text'
+              value={username}
+              name='Username'
+              onChange={({ target }) => setUsername(target.value)}
+            />
+
+            <TextField
+              margin='normal'
+              fullWidth
+              size='small'
+              id='password'
+              label='Password'
+              type='password'
+              value={password}
+              name='Password'
+              onChange={({ target }) => setPassword(target.value)}
+            />
+            <Button
+              sx={{ mt: 3, mb: 2 }}
+              fullWidth
+              size='large'
+              variant='contained'
+              type='submit'
+              id='login-button'
+            >
+              login
+            </Button>
+          </Box>
+        </Box>
+      </Container>
     </>
   );
 };

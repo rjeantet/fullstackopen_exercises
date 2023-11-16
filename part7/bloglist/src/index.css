@@ -12,6 +12,6 @@
 }
 
 .error {
-  color: rgb(128, 0, 0);
-  background-color: rgb(227, 152, 152);
+  color: rgb(128, 0, 0) !important;
+  background-color: rgb(227, 152, 152) !important;
 }

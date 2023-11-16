@@ -1,6 +1,7 @@
 import { useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Typography, Divider, Box, Button } from '@mui/material';
 
 import Header from './Header';
 import Notification from './Notification';
@@ -20,8 +21,7 @@ const Blog = () => {
   const likeBlogMutation = useMutation({
     mutationFn: (blog) =>
       blogService.update(blog.id, { likes: blog.likes + 1 }),
-    onSuccess: (blog) => {
-      setBlog(blog);
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['blogs'],
       });
@@ -73,34 +73,47 @@ const Blog = () => {
     <>
       <Header />
       <Notification />
-      <div className='blog'>
-        <div className='blogHeader'>
-          <h1>
-            {blog.title}, {blog.author}
-          </h1>
-        </div>
-        <div className='blogDetails'>
-          <div>
-            <a href={blog.url}>{blog.url}</a>
-          </div>
-          <div>
-            {blog.likes} likes
-            <button id='like-button' onClick={() => handleLikes(blog)}>
-              like
-            </button>
-          </div>
-          <div>Added by {blog.user ? `${blog.user.name}` : ''}</div>
-          <div>
-            {blog.user && user.username === `${blog.user.username}` ? (
-              <button id='remove-button' onClick={() => handleDelete(blog.id)}>
-                remove
-              </button>
-            ) : (
-              ''
-            )}
-          </div>
-        </div>
-      </div>
+      <Typography variant='h4' sx={{ mt: 4 }} gutterBottom>
+        {blog.title}, {blog.author}
+      </Typography>
+      <Divider />
+
+      <Box sx={{ mt: 4 }}>
+        <a href={blog.url}>{blog.url}</a>
+        <Box>
+          Added by{' '}
+          <Link to={`../users/${blog.user.id}`}>
+            {' '}
+            {blog.user ? `${blog.user.name}` : ''}
+          </Link>
+        </Box>
+        <Box sx={{ mt: 2 }}>
+          {blog.likes} likes
+          <Button
+            id='like-button'
+            size='small'
+            variant='contained'
+            disableElevation
+            onClick={() => handleLikes(blog)}
+          >
+            like
+          </Button>
+        </Box>
+        <Box sx={{ mt: 2 }}>
+          {blog.user && user.username === `${blog.user.username}` ? (
+            <Button
+              id='remove-button'
+              variant='outlined'
+              size='small'
+              onClick={() => handleDelete(blog.id)}
+            >
+              remove
+            </Button>
+          ) : (
+            ''
+          )}
+        </Box>
+      </Box>
       <Comments blog={blog} />
     </>
   );
