@@ -157,20 +157,28 @@ const resolvers = {
   },
   Mutation: {
     addBook: (root, args) => {
-      const book = { ...args, id: uuid() };
-      books = books.concat(book);
-      if (books.find((book) => book.title === args.book)) {
+      if (books.find((b) => b.title === args.title)) {
         throw new GraphQLError('Book already exists', {
           extensions: {
             code: 'BAD_USER_INPUT',
-            invalidArgs: args.book,
+            invalidArgs: args.title,
           },
         });
       }
       if (!authors.find((author) => author.name === args.author)) {
-        const author = { name: args.author, id: uuid() };
+        const author = { name: args.author };
         authors = authors.concat(author);
       }
+      if (!args.title || !args.author || !args.published || !args.genres) {
+        throw new GraphQLError('Missing required fields', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args,
+          },
+        });
+      }
+      const book = { ...args };
+      books = books.concat(book);
       return book;
     },
     editAuthor: (root, args) => {
