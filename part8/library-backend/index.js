@@ -141,33 +141,63 @@ const resolvers = {
   Query: {
     bookCount: async () => await Book.collection.countDocuments(),
     authorCount: async () => await Author.collection.countDocuments(),
-    // allBooks: async (root, args) => {
-    //   if (args.genre && args.author) {
-    //     return books.filter(
-    //       (book) =>
-    //         book.author === args.author && book.genres.includes(args.genre)
-    //     );
-    //   }
-    //   if (args.genre) {
-    //     return books.filter((book) => book.genres.includes(args.genre));
-    //   }
-    //   if (args.author) {
-    //     return books.filter((book) => book.author === args.author);
-    //   }
-    //   await Book.find({});
-    // },
-    allBooks: async () => Book.find({}),
+    allBooks: async (root, args) => {
+      //[TODO]: Fix this
+      if (args.genre && args.author) {
+        const author = await Author.findOne({ name: args.author });
+        return Book.find({ author: author.id, genres: args.genre });
+      }
+      if (args.author) {
+        const author = await Author.findOne({ name: args.author });
+        return Book.find({ author: author.id });
+      }
+      if (args.genre) {
+        return Book.find({ genres: args.genre });
+      }
+      return await Book.find({});
+    },
     allAuthors: async () => Author.find({}),
   },
   Author: {
-    name: (root) => root.name,
-    id: (root) => root.id,
-    born: (root) => root.born,
     bookCount: (root) =>
+      //[TODO]: Fix this
       books.filter((book) => book.author === root.name).length,
   },
   Mutation: {
     addBook: async (root, args) => {
+      if (await Book.findOne({ title: args.title })) {
+        throw new GraphQLError('Book already exists', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+          },
+        });
+      }
+      if (await !Author.findOne({ name: args.author })) {
+        throw new GraphQLError('Please add author', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.author,
+          },
+        });
+      }
+      if (!args.title || !args.author || !args.published || !args.genres) {
+        throw new GraphQLError('Missing required fields', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args,
+          },
+        });
+      }
+      const book = await new Book({
+        title: args.title,
+        author: args.author,
+        published: args.published,
+        genres: args.genres,
+      }).save();
+
+      return book;
+
       // if (books.find((b) => b.title === args.title)) {
       //   throw new GraphQLError('Book already exists', {
       //     extensions: {
@@ -190,26 +220,33 @@ const resolvers = {
       // }
       // const book = { ...args };
       // books = books.concat(book);
-      const book = await new Book({
-        title: args.title,
-        author: args.author,
-        published: args.published,
-        genres: args.genres,
-        ...args,
-      }).save();
+      // const book = await new Book({
+      //   title: args.title,
+      //   author: args.author,
+      //   published: args.published,
+      //   genres: args.genres,
+      //   ...args,
+      // }).save();
 
-      return book;
+      // return book;
     },
-    editAuthor: (root, args) => {
-      const author = authors.find((author) => author.name === args.name);
-      if (!author) {
-        return null;
-      }
-      const updatedAuthor = { ...author, born: args.setBornTo };
-      authors = authors.map((author) =>
-        author.name === args.name ? updatedAuthor : author
+    editAuthor: async (root, args) => {
+      const author = await Author.findOneAndUpdate(
+        { name: args.name },
+        { born: args.setBornTo },
+        {
+          new: true,
+        }
       );
-      return updatedAuthor;
+      if (!author) {
+        throw new GraphQLError('Author not found', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.author,
+          },
+        });
+      }
+      return author;
     },
   },
 };
