@@ -12,7 +12,7 @@ const Authors = () => {
 
   return (
     <div>
-      <h2>authors</h2>
+      <h1>authors</h1>
       <table>
         <tbody>
           <tr>

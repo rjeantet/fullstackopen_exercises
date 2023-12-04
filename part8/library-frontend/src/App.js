@@ -7,6 +7,7 @@ import Authors from './components/Authors';
 import Books from './components/Books';
 import NewBook from './components/NewBook';
 import LoginForm from './components/LoginForm';
+import Recommend from './components/Recommend';
 
 const App = () => {
   const result = useQuery(ALL_BOOKS);
@@ -16,7 +17,6 @@ const App = () => {
   );
   const client = useApolloClient();
 
-  console.log('token', token);
   const padding = {
     padding: 5,
   };
@@ -53,6 +53,9 @@ const App = () => {
               <Link style={padding} to='add'>
                 <button>add book</button>
               </Link>
+              <Link style={padding} to='recommend'>
+                <button>recommend</button>
+              </Link>
               <button onClick={logout}>logout</button>
             </>
           )}
@@ -72,6 +75,16 @@ const App = () => {
                 <LoginForm setToken={setToken} setError={notify} />
               ) : (
                 <NewBook setError={notify} />
+              )
+            }
+          />
+          <Route
+            path='/recommend'
+            element={
+              !token ? (
+                <LoginForm setToken={setToken} setError={notify} />
+              ) : (
+                <Recommend />
               )
             }
           />

@@ -8,12 +8,9 @@ const schema = new mongoose.Schema({
     required: true,
     minlength: 3,
   },
-  books: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Book',
-    },
-  ],
+  favoriteGenre: {
+    type: String,
+  },
 });
 
 schema.plugin(uniqueValidator);
