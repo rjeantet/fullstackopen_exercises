@@ -180,7 +180,7 @@ const resolvers = {
         try {
           await author.save();
         } catch (error) {
-          throw new GraphQLError('Author not created', {
+          throw new GraphQLError(error.message, {
             extensions: {
               code: 'BAD_USER_INPUT',
               invalidArgs: args.author,
