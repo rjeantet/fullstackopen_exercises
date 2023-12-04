@@ -72,3 +72,16 @@ export const ME = gql`
     }
   }
 `;
+
+export const RECO_BOOKS = gql`
+  query recommendBook($genre: String!) {
+    recommendBook(genre: $favoriteGenre) {
+      title
+      author {
+        name
+      }
+      published
+      genres
+    }
+  }
+`;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { ALL_BOOKS, ME } from '../queries/queries';
+import { ALL_BOOKS, ME, RECO_BOOKS } from '../queries/queries';
 import BookTable from './BookTable';
 
 const Recommend = () => {
