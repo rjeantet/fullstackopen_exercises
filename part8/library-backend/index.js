@@ -142,93 +142,74 @@ const resolvers = {
     bookCount: async () => await Book.collection.countDocuments(),
     authorCount: async () => await Author.collection.countDocuments(),
     allBooks: async (root, args) => {
-      //[TODO]: Fix this
       if (args.genre && args.author) {
         const author = await Author.findOne({ name: args.author });
-        return Book.find({ author: author.id, genres: args.genre });
+        return Book.find({ author: author.id, genres: args.genre }).populate(
+          'author'
+        );
       }
       if (args.author) {
         const author = await Author.findOne({ name: args.author });
-        return Book.find({ author: author.id });
+        return Book.find({ author: author }).populate('author');
       }
       if (args.genre) {
-        return Book.find({ genres: args.genre });
+        return Book.find({ genres: args.genre }).populate('author');
       }
-      return await Book.find({});
+      return await Book.find({}).populate('author');
     },
     allAuthors: async () => Author.find({}),
   },
   Author: {
-    bookCount: (root) =>
-      //[TODO]: Fix this
-      books.filter((book) => book.author === root.name).length,
+    bookCount: async (root) => {
+      const foundBooks = await Book.find({ author: root.id });
+      return foundBooks.length;
+    },
   },
+  Book: {
+    title: (root) => root.title,
+    published: (root) => root.published,
+    author: (root) => root.author,
+    genres: (root) => root.genres,
+  },
+
   Mutation: {
     addBook: async (root, args) => {
-      if (await Book.findOne({ title: args.title })) {
-        throw new GraphQLError('Book already exists', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-            invalidArgs: args.title,
-          },
-        });
+      let author = await Author.findOne({ name: args.author });
+      if (!author) {
+        author = new Author({ name: args.author, bookCount: 1 });
+        try {
+          await author.save();
+        } catch (error) {
+          throw new GraphQLError('Author not created', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.author,
+            },
+          });
+        }
+      } else {
+        author.bookCount += 1;
+        await author.save();
       }
-      if (await !Author.findOne({ name: args.author })) {
-        throw new GraphQLError('Please add author', {
+
+      let book = new Book({
+        title: args.title,
+        published: args.published,
+        genres: args.genres,
+        author: author,
+      });
+
+      try {
+        await book.save();
+      } catch (error) {
+        throw new GraphQLError(error.message, {
           extensions: {
-            code: 'BAD_USER_INPUT',
-            invalidArgs: args.author,
-          },
-        });
-      }
-      if (!args.title || !args.author || !args.published || !args.genres) {
-        throw new GraphQLError('Missing required fields', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
             invalidArgs: args,
           },
         });
       }
-      const book = await new Book({
-        title: args.title,
-        author: args.author,
-        published: args.published,
-        genres: args.genres,
-      }).save();
 
       return book;
-
-      // if (books.find((b) => b.title === args.title)) {
-      //   throw new GraphQLError('Book already exists', {
-      //     extensions: {
-      //       code: 'BAD_USER_INPUT',
-      //       invalidArgs: args.title,
-      //     },
-      //   });
-      // }
-      // if (!authors.find((author) => author.name === args.author)) {
-      //   const author = { name: args.author };
-      //   authors = authors.concat(author);
-      // }
-      // if (!args.title || !args.author || !args.published || !args.genres) {
-      //   throw new GraphQLError('Missing required fields', {
-      //     extensions: {
-      //       code: 'BAD_USER_INPUT',
-      //       invalidArgs: args,
-      //     },
-      //   });
-      // }
-      // const book = { ...args };
-      // books = books.concat(book);
-      // const book = await new Book({
-      //   title: args.title,
-      //   author: args.author,
-      //   published: args.published,
-      //   genres: args.genres,
-      //   ...args,
-      // }).save();
-
-      // return book;
     },
     editAuthor: async (root, args) => {
       const author = await Author.findOneAndUpdate(
