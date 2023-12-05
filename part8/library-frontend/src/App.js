@@ -1,13 +1,30 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useState } from 'react';
-import { useQuery, useApolloClient } from '@apollo/client';
-import { ALL_BOOKS } from './queries/queries';
+import { useQuery, useSubscription, useApolloClient } from '@apollo/client';
+import { ALL_BOOKS, BOOK_ADDED } from './queries/queries';
 
 import Authors from './components/Authors';
 import Books from './components/Books';
 import NewBook from './components/NewBook';
 import LoginForm from './components/LoginForm';
 import Recommend from './components/Recommend';
+
+export const updateCache = (cache, query, addedBook) => {
+  // helper that is used to eliminate saving same book twice
+  const uniqByName = (a) => {
+    let seen = new Set();
+    return a.filter((item) => {
+      let k = item.title;
+      return seen.has(k) ? false : seen.add(k);
+    });
+  };
+
+  cache.updateQuery(query, ({ allBooks }) => {
+    return {
+      allBooks: uniqByName(allBooks.concat(addedBook)),
+    };
+  });
+};
 
 const App = () => {
   const result = useQuery(ALL_BOOKS);
@@ -20,6 +37,14 @@ const App = () => {
   const padding = {
     padding: 5,
   };
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const addedBook = data.data.bookAdded;
+      window.alert(`New book added: ${data.data.bookAdded.title}`);
+      updateCache(client.cache, { query: ALL_BOOKS }, addedBook);
+    },
+  });
 
   if (result.loading) {
     return <div>loading...</div>;
